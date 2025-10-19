@@ -14,4 +14,4 @@ args = parser.parse_args()
 
 print(args)
 
-open(os.path.join(args['output_directory'], "123.txt"), "w").write("abc")
+open(os.path.join(args.output_directory, "123.txt"), "w").write("abc")
