@@ -1,5 +1,6 @@
 import numpy as np
 import argparse
+import os
 
 parser = argparse.ArgumentParser("PAN Random Graph Generator")
 
@@ -12,3 +13,5 @@ parser.add_argument("--output_directory", help="Directory to save graphs in.", t
 args = parser.parse_args()
 
 print(args)
+
+open(os.paths.join(args['output_directory'], "123.txt"), "w").write("abc")
