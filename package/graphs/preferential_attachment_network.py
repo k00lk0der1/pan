@@ -98,7 +98,9 @@ class PreferentialAttachmentNetwork:
         log_lik = (
             (beta*pt.log(self.d_t[:n_nodes-2]+alpha)) + 
             pt.log(self.N_t_d_t[:n_nodes-2]) -
-            pt.log((pt.power(self.N_deg[:n_nodes-2]+alpha, beta) * self.N[:n_nodes-2]).sum(axis=1))
+            pt.log(
+                (pt.power(self.N_deg[:n_nodes-2]+alpha, beta) * self.N[:n_nodes-2]).sum(axis=1)
+            )
         ).sum()
     
         return (-log_lik)
@@ -136,5 +138,40 @@ class PreferentialAttachmentNetwork:
 
         return result
     
-    def generate_posterior_samples(self, alpha_prior_factory, beta_prior_factory, n_nodes):
-        pass
+    def generate_posterior_samples(
+        self,
+        alpha_prior_factory,
+        beta_prior_factory,
+        n_nodessamples = 10000,
+        warmup = 5000,
+        chains = 4,
+        cores = 4,
+        nuts_sampler = "numpyro",
+        progressbar=False
+    ):
+        pan_model = pm.Model()
+        
+        with pan_model as model:
+            alpha = alpha_prior_factory()
+            beta = beta_prior_factory()
+            likelihood = pm.Potential(
+                'likelihood',
+                -self.negative_log_likelihood(
+                    alpha,
+                    beta,
+                    n_nodes
+                )
+            )
+
+        idata = pm.sample(
+            draws=samples,
+            tune=warmup,
+            chains=chains,
+            cores=cores,
+            model=pan_model,
+            nuts_sampler=nuts_sampler,
+            progressbar=progressbar
+        )
+
+        return idata
+        
