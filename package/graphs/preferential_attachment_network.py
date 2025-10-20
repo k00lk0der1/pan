@@ -138,7 +138,7 @@ class PreferentialAttachmentNetwork:
         soln = scipy.optimize.differential_evolution(
             self.negative_log_likelihood,
             bounds = [
-                (0, np.inf),
+                (0, 1e1000),
                 (0,1)
             ],
             args=(n_nodes)
