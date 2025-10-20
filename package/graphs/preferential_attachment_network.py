@@ -44,7 +44,6 @@ class PreferentialAttachmentNetwork:
             self.degrees[t] = 1
             self.degrees[chosen_node_index] = self.degrees[chosen_node_index] + 1
 
-            print(t, chosen_node_index, self.d_t[t])
         
         N_dict = {
             2:{np.int64(1):2}
