@@ -123,7 +123,7 @@ class PreferentialAttachmentNetwork:
 
         initial_params = np.array([init_alpha_guess, init_beta_guess])
 
-        result = minimize(
+        result = scipy.optimize.minimize(
             fun=objective_with_grad,
             x0=initial_params,
             bounds=[
