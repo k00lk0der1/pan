@@ -18,7 +18,7 @@ args = parser.parse_args()
 pan_obj = PreferentialAttachmentNetwork()
 
 start = time.time()
-pan_obj.generate_sample(alpha = args.alpha, beta =args.beta, n_nodes=args.n_nodes)
+pan_obj.generate_sample(alpha = args.alpha, beta =args.beta, n_nodes=args.n_nodes, disable_progress_bar=False)
 end = time.time()
 
 print(end-start)
