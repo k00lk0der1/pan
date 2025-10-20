@@ -5,6 +5,7 @@ import os
 
 from package.graphs import PreferentialAttachmentNetwork
 import pymc as pm
+import arviz
 
 parser = argparse.ArgumentParser("PAN Random Graph Generator")
 
