@@ -121,7 +121,7 @@ class PreferentialAttachmentNetwork:
             cost_val, grad_val = f_cost_grad(alpha_val, beta_val)
             return cost_val, grad_val.astype('float64')
 
-        initial_params = np.array([initial_guess_alpha, initial_guess_beta])
+        initial_params = np.array([init_alpha_guess, init_beta_guess])
 
         result = minimize(
             fun=objective_with_grad,
