@@ -37,7 +37,7 @@ class PreferentialAttachmentNetwork:
                 parent_node_probability_propto.sum()
             )
 
-            chosen_node_index = (parent_node_probability_cdf<uniform_samples[t-2]).argmax()
+            chosen_node_index = (parent_node_probability_cdf>uniform_samples[t-2]).argmax()
 
             self.d_t[t] = self.degrees[chosen_node_index]
             self.degrees[t] = 1
