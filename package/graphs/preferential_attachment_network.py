@@ -50,7 +50,7 @@ class PreferentialAttachmentNetwork:
             2:{np.int64(1):2}
         }
 
-        print(2, N_dict[2])
+        max_unique_degree = 2
 
         for t in range(3, n_nodes):
 
@@ -66,8 +66,22 @@ class PreferentialAttachmentNetwork:
             if(N_dict[t][self.d_t[t-1]]==0):
                 N_dict[t].pop(self.d_t[t-1])
             
-            print(t, N_dict[t])
-            
+            max_unique_degree = max(
+                max_unique_degree,
+                len(N_dict[t].keys())
+            )
+        
+        self.N = np.zeros(shape(n_nodes-2, max_unique_degree))
+        self.N_deg = np.zeros(shape(n_nodes-2, max_unique_degree))
+
+        for t in range(2, n_nodes):
+            for degree_counter, d in enumerate(N_dict[t].keys()):
+                self.N[t][d] = N_dict[t][d]
+                self.N_deg[t][d] = degree_counter
+        
+        print(N_dict)
+        print(self.N)
+        print(self.N_deg)
         
         self.observed = True
                     
