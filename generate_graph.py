@@ -4,6 +4,7 @@ import argparse
 import os
 
 from package.graphs import PreferentialAttachmentNetwork
+import pymc as pm
 
 parser = argparse.ArgumentParser("PAN Random Graph Generator")
 
