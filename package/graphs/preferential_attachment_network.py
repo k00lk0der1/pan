@@ -84,12 +84,18 @@ class PreferentialAttachmentNetwork:
                 self.N[t-2][degree_counter] = N_dict[t][d]
                 self.N_deg[t-2][degree_counter] = d
         
+        self.d_t =  self.d_t[2:]
+        self.N_t_d_t =  self.N_t_d_t[2:]
         
         self.observed = True
                     
 
     def negative_log_likelihood(self, alpha, beta, n_nodes):
-        pass
+        log_lik = (
+            (np.power(self.d_t+alpha, beta)*self.N_t_dt)/
+            (np.power(self.self.N_deg+alpha, beta) * self.N).sum(axis=1)
+        )
+        return (-log_lik)
     
     def numerical_mle(self, n_nodes):
         pass
