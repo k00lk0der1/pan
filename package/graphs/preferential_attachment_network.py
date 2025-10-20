@@ -59,7 +59,7 @@ class PreferentialAttachmentNetwork:
             if(N_dict[t][self.d_t[t-1]]==0):
                 N_dict[t].pop(self.d_t[t-1])
             
-            print(N_dict)
+        print(N_dict)
             
         
         self.observed = True
