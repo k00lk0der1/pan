@@ -2,6 +2,7 @@ import copy
 import numpy as np
 import tqdm
 import pytensor.tensor as pt
+import pytensor
 import scipy.stats, scipy.optimize 
 
 #import jax
