@@ -79,9 +79,9 @@ class PreferentialAttachmentNetwork:
                 self.N[t-2][degree_counter] = N_dict[t][d]
                 self.N_deg[t-2][degree_counter] = d
         
-        print(N_dict)
-        print(self.N)
-        print(self.N_deg)
+        #print(N_dict)
+        #print(self.N)
+        #print(self.N_deg)
         
         self.observed = True
                     
