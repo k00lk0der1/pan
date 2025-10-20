@@ -31,4 +31,4 @@ posterior_arviz = pan_obj.generate_posterior_samples(
     args.n_nodes
 )
 
-print(posterior_arviz.posterior.to_dataframe().reset_index(drop=True).summary())
+print(arviz.summary(posterior_arviz, group="posterior"))
