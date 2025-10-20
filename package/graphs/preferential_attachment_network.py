@@ -138,7 +138,7 @@ class PreferentialAttachmentNetwork:
         self,
         alpha_prior_factory,
         beta_prior_factory,
-        n_nodessamples = 10000,
+        n_nodes = 10000,
         warmup = 5000,
         chains = 4,
         cores = 4,
