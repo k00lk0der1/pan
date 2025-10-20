@@ -48,9 +48,11 @@ class PreferentialAttachmentNetwork:
         }
 
         for t in range(3, n_nodes):
+
             N_dict[t] = copy.deepcopy(N_dict[t-1])
-            N_dict[t][1] = N_dict[t][1] + 1
+            N_dict[t][np.int64(1)] = N_dict[t][np.int64(1)] + 1
             N_dict[t][self.d_t[t-1]] = N_dict[t][self.d_t[t-1]] - 1
+
             if self.d_t[t-1]+1 in N_dict[t].keys():
                 N_dict[t][self.d_t[t-1]+1] = N_dict[t][self.d_t[t-1]] + 1
             else:
