@@ -22,10 +22,10 @@ class PreferentialAttachmentNetwork:
         uniform_samples = random_state.uniform(size=(n_nodes-2))
 
         #Initializing Graph State
-        self.degrees = np.zeros(shape=(n_nodes))
+        self.degrees = np.zeros(shape=(n_nodes)).astype(int)
         self.degrees[:2] = 1
 
-        self.d_t = np.zeros(shape=(n_nodes))
+        self.d_t = np.zeros(shape=(n_nodes)).astype(int)
 
         f = lambda x : np.power(x + alpha, beta)
         
