@@ -1,11 +1,13 @@
 import copy
 import numpy as np
 import tqdm
+import pytensor.tensor as pt
+import scipy.stats, scipy.optimize 
 
 #import jax
 #import jax.numpy as jnp
 
-#import pytensor.tensor as pt 
+
 #import pymc as pm
 
 
@@ -91,14 +93,47 @@ class PreferentialAttachmentNetwork:
                     
 
     def negative_log_likelihood(self, alpha, beta, n_nodes):
-        log_lik = np.log(
-            (np.power(self.d_t+alpha, beta)*self.N_t_d_t)/
-            (np.power(self.N_deg+alpha, beta) * self.N).sum(axis=1)
+        
+        log_lik = (
+            (beta*pt.log(self.d_t+alpha)) + 
+            pt.log(self.N_t_d_t) -
+            pt.log(pt.power(self.N_deg+alpha, beta) * self.N).sum(axis=1))
         ).sum()
+    
         return (-log_lik)
     
-    def numerical_mle(self, n_nodes):
-        pass
+    def numerical_mle(self, init_alpha_guess, init_beta_guess, n_nodes):
+        alpha_sym = pt.scalar('alpha')
+        beta_sym = pt.scalar('beta')
+
+        cost = self.negative_log_likelihood(alpha_sym, beta_sym, n_nodes)
+
+        grad_cost = pt.grad(cost, wrt=[alpha_sym, beta_sym])
+
+        f_cost_grad = pytensor.function(
+            inputs=[alpha_sym, beta_sym],
+            outputs=[cost, pt.stack(grad_cost)]
+        )
+
+        def objective_with_grad(params):
+            alpha_val, beta_val = params
+            cost_val, grad_val = f_cost_grad(alpha_val, beta_val)
+            return cost_val, grad_val.astype('float64')
+
+        initial_params = np.array([initial_guess_alpha, initial_guess_beta])
+
+        result = minimize(
+            fun=objective_with_grad,
+            x0=initial_params,
+            bounds=[
+                (0, np.inf),
+                (0,1)
+            ],
+            method='L-BFGS-B',
+            jac=True
+        )
+
+        return result
     
     def generate_posterior_samples(self, alpha_prior_factory, beta_prior_factory, n_nodes):
         pass
