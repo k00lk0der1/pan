@@ -12,6 +12,4 @@ parser.add_argument("--output_directory", help="Directory to save graphs in.", t
 
 args = parser.parse_args()
 
-print(args)
 
-open(os.path.join(args.output_directory, "123.txt"), "w").write("abc")
