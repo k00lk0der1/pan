@@ -30,3 +30,5 @@ posteiror_arviz = pan_obj.generate_posterior_samples(
     lambda : pm.Uniform('beta', lower=0, upper=1.0),
     args.n_nodes
 )
+
+print(posterior_arviz.posterior.to_dataframe().reset_index(drop=True).summary())
