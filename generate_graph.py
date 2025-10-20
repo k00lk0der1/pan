@@ -21,4 +21,4 @@ start = time.time()
 pan_obj.generate_sample(alpha = args.alpha, beta =args.beta, n_nodes=args.n_nodes)
 end = time.time()
 
-print(start-end)
+print(end-start)
