@@ -76,8 +76,8 @@ class PreferentialAttachmentNetwork:
 
         for t in range(2, n_nodes):
             for degree_counter, d in enumerate(N_dict[t].keys()):
-                self.N[t][d] = N_dict[t][d]
-                self.N_deg[t][d] = degree_counter
+                self.N[t-2][degree_counter] = N_dict[t][d]
+                self.N_deg[t-2][degree_counter] = d
         
         print(N_dict)
         print(self.N)
