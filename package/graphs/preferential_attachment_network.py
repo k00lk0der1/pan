@@ -97,7 +97,7 @@ class PreferentialAttachmentNetwork:
         log_lik = (
             (beta*pt.log(self.d_t+alpha)) + 
             pt.log(self.N_t_d_t) -
-            pt.log(pt.power(self.N_deg+alpha, beta) * self.N).sum(axis=1))
+            pt.log(pt.power(self.N_deg+alpha, beta) * self.N).sum(axis=1)
         ).sum()
     
         return (-log_lik)
