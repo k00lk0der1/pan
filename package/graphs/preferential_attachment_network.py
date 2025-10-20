@@ -71,8 +71,8 @@ class PreferentialAttachmentNetwork:
                 len(N_dict[t].keys())
             )
         
-        self.N = np.zeros(shape(n_nodes-2, max_unique_degree))
-        self.N_deg = np.zeros(shape(n_nodes-2, max_unique_degree))
+        self.N = np.zeros(shape=(n_nodes-2, max_unique_degree))
+        self.N_deg = np.zeros(shape=(n_nodes-2, max_unique_degree))
 
         for t in range(2, n_nodes):
             for degree_counter, d in enumerate(N_dict[t].keys()):
