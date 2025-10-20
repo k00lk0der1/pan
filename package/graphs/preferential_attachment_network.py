@@ -89,7 +89,7 @@ class PreferentialAttachmentNetwork:
                     
 
     def negative_log_likelihood(self, alpha, beta, n_nodes):
-        
+        pass
     
     def numerical_mle(self, n_nodes):
         pass
