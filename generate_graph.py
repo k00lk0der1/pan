@@ -26,6 +26,7 @@ end = time.time()
 
 print(end-start)
 
+print(pan_obj.negative_log_likelihood(args.alpha, args.beta, args.n_nodes))
 """
 posterior_arviz = pan_obj.generate_posterior_samples(
     lambda : pm.Exponential('alpha', lam=1.0),
