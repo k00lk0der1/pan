@@ -38,14 +38,19 @@ class PreferentialAttachmentNetwork:
             )
 
             chosen_node_index = (parent_node_probability_cdf>uniform_samples[t-2]).argmax()
+            
 
             self.d_t[t] = self.degrees[chosen_node_index]
             self.degrees[t] = 1
             self.degrees[chosen_node_index] = self.degrees[chosen_node_index] + 1
+
+            print(t, chosen_node_index, self.d_t[t])
         
         N_dict = {
             2:{np.int64(1):2}
         }
+
+        print(2, N_dict[2])
 
         for t in range(3, n_nodes):
 
@@ -61,7 +66,7 @@ class PreferentialAttachmentNetwork:
             if(N_dict[t][self.d_t[t-1]]==0):
                 N_dict[t].pop(self.d_t[t-1])
             
-            print(N_dict[t-1], N_dict[t])
+            print(t, N_dict[t])
             
         
         self.observed = True
