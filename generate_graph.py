@@ -21,7 +21,11 @@ start = time.time()
 pan_obj.generate_sample(alpha = args.alpha, beta =args.beta, n_nodes=args.n_nodes, disable_progress_bar=False)
 end = time.time()
 
-print(pan_obj.numerical_mle(0.1,0.1, 10000))
-
 
 print(end-start)
+
+posteiror_arviz = pan_obj.generate_posterior_samples(
+    lambda : pm.Exponential('alpha', lam=1.0),
+    lambda : pm.Uniform('beta', lower=0, upper=1.0),
+    args.n_nodes
+)

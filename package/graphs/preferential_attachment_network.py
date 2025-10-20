@@ -4,12 +4,8 @@ import tqdm
 import pytensor.tensor as pt
 import pytensor
 import scipy.stats, scipy.optimize 
-
-#import jax
-#import jax.numpy as jnp
-
-
-#import pymc as pm
+import pymc as pm
+import numpyro
 
 
 class PreferentialAttachmentNetwork:
