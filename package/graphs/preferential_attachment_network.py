@@ -101,7 +101,7 @@ class PreferentialAttachmentNetwork:
     
         return (-log_lik)
     
-    def numerical_mle(self, init_alpha_guess, init_beta_guess, n_nodes):
+    def numerical_mle1(self, init_alpha_guess, init_beta_guess, n_nodes):
         alpha_sym = pt.scalar('alpha')
         beta_sym = pt.scalar('beta')
 
@@ -133,6 +133,18 @@ class PreferentialAttachmentNetwork:
         )
 
         return result
+    
+    def numerical_mle(self, init_alpha_guess, init_beta_guess, n_nodes):
+        soln = scipy.optimize.differential_evolution(
+            self.negative_log_likelihood,
+            bounds = [
+                (0, np.inf),
+                (0,1)
+            ],
+            args=(n_nodes)
+        )
+        return soln
+
     
     def generate_posterior_samples(
         self,
