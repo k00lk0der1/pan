@@ -92,7 +92,7 @@ class PreferentialAttachmentNetwork:
 
     def negative_log_likelihood(self, alpha, beta, n_nodes):
         log_lik = (
-            (np.power(self.d_t+alpha, beta)*self.N_t_dt)/
+            (np.power(self.d_t+alpha, beta)*self.N_t_d_t)/
             (np.power(self.self.N_deg+alpha, beta) * self.N).sum(axis=1)
         )
         return (-log_lik)
