@@ -1,5 +1,6 @@
 import copy
 import numpy as np
+import tqdm
 
 #import jax
 #import jax.numpy as jnp
@@ -12,7 +13,7 @@ class PreferentialAttachmentNetwork:
     def __init__(self):
         self.observed = False
     
-    def generate_sample(self, alpha, beta, n_nodes, random_state_seed=None):
+    def generate_sample(self, alpha, beta, n_nodes, random_state_seed=None, disable_progress_bar=True):
         
         #Setting the seed and generating a RandomState object.
         self.random_state_seed = random_state_seed
@@ -29,7 +30,7 @@ class PreferentialAttachmentNetwork:
 
         f = lambda x : np.power(x + alpha, beta)
         
-        for t in range(2, n_nodes):
+        for t in tqdm.tqdm(range(2, n_nodes), disable=disable_progress_bar):
             parent_node_probability_propto = f(self.degrees[:t])
             
             parent_node_probability_cdf = (
@@ -51,7 +52,7 @@ class PreferentialAttachmentNetwork:
 
         max_unique_degree = 2
 
-        for t in range(3, n_nodes):
+        for t in tqdm.tqdm(range(3, n_nodes), disable=disable_progress_bar):
 
             N_dict[t] = copy.deepcopy(N_dict[t-1])
             N_dict[t][np.int64(1)] = N_dict[t][np.int64(1)] + 1
@@ -73,7 +74,7 @@ class PreferentialAttachmentNetwork:
         self.N = np.zeros(shape=(n_nodes-2, max_unique_degree))
         self.N_deg = np.zeros(shape=(n_nodes-2, max_unique_degree))
 
-        for t in range(2, n_nodes):
+        for t in tqdm.tqdm(range(2, n_nodes), disable=disable_progress_bar):
             for degree_counter, d in enumerate(N_dict[t].keys()):
                 self.N[t-2][degree_counter] = N_dict[t][d]
                 self.N_deg[t-2][degree_counter] = d
