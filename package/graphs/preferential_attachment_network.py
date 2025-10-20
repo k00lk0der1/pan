@@ -57,7 +57,7 @@ class PreferentialAttachmentNetwork:
                 N_dict[t][self.d_t[t-1]+1] = 1
             
             if(N_dict[t][self.d_t[t-1]]==0):
-                N_dict[t].pop(self.d_t[t-1]])
+                N_dict[t].pop(self.d_t[t-1])
             
             print(N_dict)
             
