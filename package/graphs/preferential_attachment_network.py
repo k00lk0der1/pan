@@ -27,6 +27,7 @@ class PreferentialAttachmentNetwork:
         self.degrees[:2] = 1
 
         self.d_t = np.zeros(shape=(n_nodes)).astype(np.int64)
+        self.N_t_d_t = np.zeros(shape=(n_nodes)).astype(np.int64)
 
         f = lambda x : np.power(x + alpha, beta)
         
@@ -49,6 +50,8 @@ class PreferentialAttachmentNetwork:
         N_dict = {
             2:{np.int64(1):2}
         }
+        
+        self.N_t_d_t[2] = np.int64(2)
 
         max_unique_degree = 2
 
@@ -66,6 +69,8 @@ class PreferentialAttachmentNetwork:
             if(N_dict[t][self.d_t[t-1]]==0):
                 N_dict[t].pop(self.d_t[t-1])
             
+            self.N_t_d_t[t] = N_dict[t][self.d_t[t]]
+            
             max_unique_degree = max(
                 max_unique_degree,
                 len(N_dict[t].keys())
@@ -79,15 +84,12 @@ class PreferentialAttachmentNetwork:
                 self.N[t-2][degree_counter] = N_dict[t][d]
                 self.N_deg[t-2][degree_counter] = d
         
-        #print(N_dict)
-        #print(self.N)
-        #print(self.N_deg)
         
         self.observed = True
                     
 
     def negative_log_likelihood(self, alpha, beta, n_nodes):
-        pass
+        
     
     def numerical_mle(self, n_nodes):
         pass
