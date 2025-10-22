@@ -13,24 +13,26 @@ class PreferentialAttachmentNetwork:
         self.observed = False
     
     def generate_sample(self, alpha, beta, n_nodes, random_state_seed=None, disable_progress_bar=True):
-        
+        #Setting n_nodes
+        self.n_nodes = n_nodes
+
         #Setting the seed and generating a RandomState object.
         self.random_state_seed = random_state_seed
         random_state = np.random.RandomState(self.random_state_seed)
         
         #Generating samples from the uniform distribution to use for inverse CDF tranform
-        uniform_samples = random_state.uniform(size=(n_nodes-2))
+        uniform_samples = random_state.uniform(size=(self.n_nodes-2))
 
         #Initializing Graph State
-        self.degrees = np.zeros(shape=(n_nodes)).astype(np.int64)
+        self.degrees = np.zeros(shape=(self.n_nodes)).astype(np.int64)
         self.degrees[:2] = 1
 
-        self.d_t = np.zeros(shape=(n_nodes)).astype(np.int64)
-        self.N_t_d_t = np.zeros(shape=(n_nodes)).astype(np.int64)
+        self.d_t = np.zeros(shape=(self.n_nodes)).astype(np.int64)
+        self.N_t_d_t = np.zeros(shape=(self.n_nodes)).astype(np.int64)
 
         f = lambda x : np.power(x + alpha, beta)
         
-        for t in tqdm.tqdm(range(2, n_nodes), disable=disable_progress_bar):
+        for t in tqdm.tqdm(range(2, self.n_nodes), disable=disable_progress_bar):
             parent_node_probability_propto = f(self.degrees[:t])
             
             parent_node_probability_cdf = (
@@ -54,7 +56,7 @@ class PreferentialAttachmentNetwork:
 
         max_unique_degree = 2
 
-        for t in tqdm.tqdm(range(3, n_nodes), disable=disable_progress_bar):
+        for t in tqdm.tqdm(range(3, self.n_nodes), disable=disable_progress_bar):
 
             N_dict[t] = copy.deepcopy(N_dict[t-1])
             N_dict[t][np.int64(1)] = N_dict[t][np.int64(1)] + 1
@@ -75,10 +77,10 @@ class PreferentialAttachmentNetwork:
                 len(N_dict[t].keys())
             )
         
-        self.N = np.zeros(shape=(n_nodes-2, max_unique_degree))
-        self.N_deg = np.zeros(shape=(n_nodes-2, max_unique_degree))
+        self.N = np.zeros(shape=(self.n_nodes-2, max_unique_degree))
+        self.N_deg = np.zeros(shape=(self.n_nodes-2, max_unique_degree))
 
-        for t in tqdm.tqdm(range(2, n_nodes), disable=disable_progress_bar):
+        for t in tqdm.tqdm(range(2, self.n_nodes), disable=disable_progress_bar):
             for degree_counter, d in enumerate(N_dict[t].keys()):
                 self.N[t-2][degree_counter] = N_dict[t][d]
                 self.N_deg[t-2][degree_counter] = d
@@ -89,7 +91,7 @@ class PreferentialAttachmentNetwork:
         self.observed = True
                     
 
-    def negative_log_likelihood(self, alpha, beta, n_nodes):
+    def negative_log_likelihood(self, alpha, beta, n_nodes=self.n_nodes):
         
         log_lik = (
             (beta*pt.log(self.d_t[:n_nodes-2]+alpha)) + 
@@ -101,7 +103,7 @@ class PreferentialAttachmentNetwork:
     
         return (-log_lik)
     
-    def numerical_mle(self, alpha_bounds=(-1,10), beta_bounds=(0,1), n_nodes):
+    def numerical_mle(self, alpha_bounds=(-1,10), beta_bounds=(0,1), n_nodes=self.n_nodes):
         alpha_sym = pt.scalar('alpha')
         beta_sym = pt.scalar('beta')
             
@@ -132,7 +134,7 @@ class PreferentialAttachmentNetwork:
         self,
         alpha_prior_factory,
         beta_prior_factory,
-        n_nodes,
+        n_nodes=self.n_nodes,
         samples = 10000,
         warmup = 5000,
         chains = 4,
