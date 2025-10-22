@@ -1,13 +1,10 @@
 import numpy as np
-import time
 import argparse
 import os
-
 from package.graphs import PreferentialAttachmentNetwork
-import pymc as pm
-import arviz
 import multiprocess
 from itertools import repeat
+import dill
 
 parser = argparse.ArgumentParser("PAN Random Graph Generator")
 
@@ -48,4 +45,10 @@ mp_pool.close()
 mp_pool.join()
 
 for pan_obj in pan_objs:
-    print(pan_obj.observed)
+    open(
+        os.path.join(
+            output_directory,
+            f"alpha={args.alpha}_beta={args.beta}_nodes={args.n_nodes}_seed={pan_obj.random_state_seed}"
+        ),
+        "wb"
+    ).write(dill.dump(pan_obj))
