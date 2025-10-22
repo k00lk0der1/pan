@@ -38,7 +38,7 @@ mles = np.array(
                 ),
                 "rb"
             )
-        ).numerical_mle.x for filename in filtered_files
+        ).numerical_mle().x for filename in filtered_files
     ]
 )
 
