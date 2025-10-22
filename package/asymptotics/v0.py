@@ -1,3 +1,6 @@
+import numpy as np
+import scipy.optimize
+
 def f(k, alpha, beta):
     return np.power(k+alpha, beta)
 
