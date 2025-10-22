@@ -14,25 +14,14 @@ parser.add_argument("--beta", help="beta parameter.", type=float)
 parser.add_argument("--n_nodes", help="Number of nodes in each graph.", type=int)
 parser.add_argument("--n_samples", help="Number of graphs to generate.", type=int)
 parser.add_argument("--output_directory", help="Directory to save graphs in.", type=str)
+parser.add_argument("--random_seed", help="Random Seed for generating seeds of the graphs", type=int)
+parser.add_argument("--n_processes", help="Number of processes/cores to use to generate graphs", type=int)
 
 args = parser.parse_args()
 
-pan_obj = PreferentialAttachmentNetwork()
+#pan_objs = [PreferentialAttachmentNetwork() for _ in range(args.n_samples)]
 
-start = time.time()
-pan_obj.generate_sample(alpha = args.alpha, beta =args.beta, n_nodes=args.n_nodes)
-end = time.time()
+seeds = np.random.RandomState(args.random_seed).random.randint(0, pow(2,32), size=args.n_samples)
 
-
-print(end-start)
-
-print(pan_obj.negative_log_likelihood(args.alpha, args.beta, args.n_nodes))
-"""
-posterior_arviz = pan_obj.generate_posterior_samples(
-    lambda : pm.Exponential('alpha', lam=1.0),
-    lambda : pm.Uniform('beta', lower=0, upper=1.0),
-    args.n_nodes
-)
-
-print(arviz.summary(posterior_arviz, group="posterior"))
-"""
+print(seeds.shape)
+print(seeds)
