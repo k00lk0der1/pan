@@ -9,6 +9,7 @@ parser.add_argument("--alpha", help="alpha parameter.", type=float)
 parser.add_argument("--beta", help="beta parameter.", type=float)
 parser.add_argument("--n_nodes", help="Number of nodes in each graph.", type=int)
 parser.add_argument("--output_directory", help="Directory to save graphs in.", type=str)
+parser.add_argument("--n_samples_max", help="Maximum number of samples to use", type=int)
 
 
 args = parser.parse_args()
@@ -22,7 +23,22 @@ filtered_files = [
     )
 ]
 
-n = len(filtered_files)
+n = min(len(filtered_files), args.n_samples_max)
 
-print("N Samples :", n)
+print("Number of Samples :", n)
+
+mles = np.array(
+    [
+        dill.load(
+            open(
+                os.path.join(
+                    args.output_directory,
+                    filename[:n]
+                )
+            )
+        ).numerical_mle.x for filename in filtered_files
+    ]
+)
+
+print(mles.shape)
 
