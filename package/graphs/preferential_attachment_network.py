@@ -107,7 +107,7 @@ class PreferentialAttachmentNetwork:
         if(not self.observed):
             raise RuntimeError("Graph has not been observed yet")
 
-        if(type(n_nodes)=type(None)):
+        if(type(n_nodes)==type(None)):
             n_nodes = self.n_nodes
           
         alpha_sym = pt.scalar('alpha')
@@ -152,7 +152,7 @@ class PreferentialAttachmentNetwork:
         if(not self.observed):
             raise RuntimeError("Graph has not been observed yet")
 
-        if(type(n_nodes)=type(None)):
+        if(type(n_nodes)==type(None)):
             n_nodes = self.n_nodes
         
         pan_model = pm.Model()
