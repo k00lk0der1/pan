@@ -101,48 +101,30 @@ class PreferentialAttachmentNetwork:
     
         return (-log_lik)
     
-    def numerical_mle1(self, init_alpha_guess, init_beta_guess, n_nodes):
+    def numerical_mle(self, init_alpha_guess, init_beta_guess, n_nodes):
         alpha_sym = pt.scalar('alpha')
         beta_sym = pt.scalar('beta')
-
-        cost = self.negative_log_likelihood(alpha_sym, beta_sym, n_nodes)
-
-        grad_cost = pt.grad(cost, wrt=[alpha_sym, beta_sym])
-
-        f_cost_grad = pytensor.function(
+            
+        nll = self.negative_log_likelihood(alpha_sym, beta_sym, n_nodes)
+            
+        # Compile the symbolic expression into a callable function
+        f_nll = pytensor.function(
             inputs=[alpha_sym, beta_sym],
-            outputs=[cost, pt.stack(grad_cost)]
+            outputs=nll
         )
 
-        def objective_with_grad(params):
+        def objective(params):
             alpha_val, beta_val = params
-            cost_val, grad_val = f_cost_grad(alpha_val, beta_val)
-            return cost_val, grad_val.astype('float64')
-
-        initial_params = np.array([init_alpha_guess, init_beta_guess])
-
-        result = scipy.optimize.minimize(
-            fun=objective_with_grad,
-            x0=initial_params,
-            bounds=[
-                (0, np.inf),
-                (0,1)
-            ],
-            method='L-BFGS-B',
-            jac=True
-        )
-
-        return result
-    
-    def numerical_mle(self, init_alpha_guess, init_beta_guess, n_nodes):
-        soln = scipy.optimize.differential_evolution(
-            self.negative_log_likelihood,
+            return f_nll(alpha_val, beta_val)
+        
+        soln = scipy.optimize.dual_annealing(
+            objective,
             bounds = [
-                (0, 1e1000),
+                (0, 10),
                 (0,1)
-            ],
-            args=(n_nodes)
+            ]
         )
+        
         return soln
 
     
