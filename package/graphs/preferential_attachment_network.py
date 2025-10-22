@@ -101,7 +101,7 @@ class PreferentialAttachmentNetwork:
     
         return (-log_lik)
     
-    def numerical_mle(self, init_alpha_guess, init_beta_guess, n_nodes):
+    def numerical_mle(self, alpha_bounds=(-1,10), beta_bounds=(0,1), n_nodes):
         alpha_sym = pt.scalar('alpha')
         beta_sym = pt.scalar('beta')
             
@@ -120,8 +120,8 @@ class PreferentialAttachmentNetwork:
         soln = scipy.optimize.dual_annealing(
             objective,
             bounds = [
-                (0, 10),
-                (0,1)
+                alpha_bounds,
+                beta_bounds
             ]
         )
         
