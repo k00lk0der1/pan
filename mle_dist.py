@@ -2,6 +2,7 @@ import os
 import argparse
 from package.graphs import PreferentialAttachmentNetwork
 import dill
+import numpy as np
 
 parser = argparse.ArgumentParser("PAN Random Graph Generator")
 
