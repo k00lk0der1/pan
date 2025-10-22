@@ -45,10 +45,13 @@ mp_pool.close()
 mp_pool.join()
 
 for pan_obj in pan_objs:
-    open(
-        os.path.join(
-            args.output_directory,
-            f"alpha={args.alpha}_beta={args.beta}_nodes={args.n_nodes}_seed={pan_obj.random_state_seed}"
-        ),
-        "wb"
-    ).write(dill.dump(pan_obj))
+    dill.dump(
+        pan_obj,
+        open(
+            os.path.join(
+                args.output_directory,
+                f"alpha={args.alpha}_beta={args.beta}_nodes={args.n_nodes}_seed={pan_obj.random_state_seed}"
+            ),
+            "wb"
+        )
+    )
