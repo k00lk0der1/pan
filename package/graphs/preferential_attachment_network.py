@@ -91,7 +91,7 @@ class PreferentialAttachmentNetwork:
         self.observed = True
                     
 
-    def negative_log_likelihood(self, alpha, beta, n_nodes=self.n_nodes):
+    def negative_log_likelihood(self, alpha, beta, n_nodes):
         
         log_lik = (
             (beta*pt.log(self.d_t[:n_nodes-2]+alpha)) + 
@@ -103,7 +103,13 @@ class PreferentialAttachmentNetwork:
     
         return (-log_lik)
     
-    def numerical_mle(self, alpha_bounds=(-1,10), beta_bounds=(0,1), n_nodes=self.n_nodes):
+    def numerical_mle(self, alpha_bounds=(-1,10), beta_bounds=(0,1), n_nodes=None):
+        if(not self.observed):
+            raise RuntimeError("Graph has not been observed yet")
+
+        if(type(n_nodes)=type(None)):
+            n_nodes = self.n_nodes
+          
         alpha_sym = pt.scalar('alpha')
         beta_sym = pt.scalar('beta')
             
@@ -134,7 +140,7 @@ class PreferentialAttachmentNetwork:
         self,
         alpha_prior_factory,
         beta_prior_factory,
-        n_nodes=self.n_nodes,
+        n_nodes=None,
         samples = 10000,
         warmup = 5000,
         chains = 4,
@@ -142,6 +148,13 @@ class PreferentialAttachmentNetwork:
         nuts_sampler = "numpyro",
         progressbar=False
     ):
+
+        if(not self.observed):
+            raise RuntimeError("Graph has not been observed yet")
+
+        if(type(n_nodes)=type(None)):
+            n_nodes = self.n_nodes
+        
         pan_model = pm.Model()
         
         with pan_model as model:
