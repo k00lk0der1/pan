@@ -21,7 +21,7 @@ args = parser.parse_args()
 
 #pan_objs = [PreferentialAttachmentNetwork() for _ in range(args.n_samples)]
 
-seeds = np.random.RandomState(args.random_seed).random.randint(0, pow(2,32), size=args.n_samples)
+seeds = np.random.RandomState(args.random_seed).randint(0, pow(2,32), size=args.n_samples)
 
 print(seeds.shape)
 print(seeds)
