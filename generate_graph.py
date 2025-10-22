@@ -6,6 +6,7 @@ import os
 from package.graphs import PreferentialAttachmentNetwork
 import pymc as pm
 import arviz
+import multiprocess
 
 parser = argparse.ArgumentParser("PAN Random Graph Generator")
 
@@ -19,9 +20,26 @@ parser.add_argument("--n_processes", help="Number of processes/cores to use to g
 
 args = parser.parse_args()
 
-#pan_objs = [PreferentialAttachmentNetwork() for _ in range(args.n_samples)]
-
 seeds = np.random.RandomState(args.random_seed).randint(0, pow(2,32), size=args.n_samples)
 
-print(seeds.shape)
-print(seeds)
+pan_objs = [PreferentialAttachmentNetwork() for _ in range(args.n_samples)]
+
+def pan_objs_generating_function(pan_obj, alpha, beta, n_nodes, seed): 
+    return pan_obj.generate_sample(
+        alpha=alpha,
+        beta=beta,
+        n_nodes=n_nodes,
+        random_state_seed=seed
+    )
+
+args_iterable = zip(
+    pan_objs,
+    repeat(args.alpha),
+    repeat(args.beta),
+    repeat(args.n_nodes),
+    seeds
+)
+
+mp_pool = multiprocess.Pool(processes=args.n_processes)
+
+mp_pool.starmap(pan_objs_generating_function, args_iterable)
