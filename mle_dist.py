@@ -3,6 +3,8 @@ import argparse
 from package.graphs import PreferentialAttachmentNetwork
 import dill
 import numpy as np
+import pandas as pd
+import multiprocess
 
 parser = argparse.ArgumentParser("PAN Random Graph Generator")
 
