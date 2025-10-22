@@ -90,8 +90,6 @@ class PreferentialAttachmentNetwork:
         
         self.observed = True
 
-                    
-
     def negative_log_likelihood(self, alpha, beta, n_nodes):
         
         log_lik = (

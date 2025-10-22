@@ -23,18 +23,17 @@ args = parser.parse_args()
 
 seeds = np.random.RandomState(args.random_seed).randint(0, pow(2,32), size=args.n_samples)
 
-pan_objs = [PreferentialAttachmentNetwork() for _ in range(args.n_samples)]
-
-def pan_objs_generating_function(pan_obj, alpha, beta, n_nodes, seed): 
-    return pan_obj.generate_sample(
+def pan_objs_generating_function(pan_obj, alpha, beta, n_nodes, seed):
+    pan_obj.generate_sample(
         alpha=alpha,
         beta=beta,
         n_nodes=n_nodes,
         random_state_seed=seed
     )
+    return pan_obj
 
 args_iterable = zip(
-    pan_objs,
+    [PreferentialAttachmentNetwork() for _ in range(args.n_samples)],
     repeat(args.alpha),
     repeat(args.beta),
     repeat(args.n_nodes),
@@ -43,7 +42,7 @@ args_iterable = zip(
 
 mp_pool = multiprocess.Pool(processes=args.n_processes)
 
-mp_pool.starmap(pan_objs_generating_function, args_iterable)
+pan_objs = mp_pool.starmap(pan_objs_generating_function, args_iterable)
 
 mp_pool.close()
 mp_pool.join()
