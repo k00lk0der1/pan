@@ -17,7 +17,7 @@ filtered_files = [
     filename for filename in filenames if (
         f"alpha={args.alpha}" in filename and
         f"beta={args.beta}" in filename and
-        f"nodes={args.n_nodes}" in filename and
+        f"nodes={args.n_nodes}" in filename
     )
 ]
 
