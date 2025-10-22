@@ -89,6 +89,8 @@ class PreferentialAttachmentNetwork:
         self.N_t_d_t =  self.N_t_d_t[2:]
         
         self.observed = True
+
+        return self.observed
                     
 
     def negative_log_likelihood(self, alpha, beta, n_nodes):
