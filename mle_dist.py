@@ -44,7 +44,7 @@ mp_pool.join()
 
 mles = pd.DataFrame(mles)
 
-print(mles.summary())
+print(mles.describe())
 
 print(mles.cov())
 
