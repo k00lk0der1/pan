@@ -17,14 +17,14 @@ args = parser.parse_args()
 filenames = os.listdir(args.output_directory)
 
 filtered_files = [
-    filename for filename in filenames if (
+    filename for filenames in filenames if (
         f"alpha={args.alpha}" in filename and
         f"beta={args.beta}" in filename and
         f"nodes={args.n_nodes}" in filename
     )
-]
+][:args.n_samples_max]
 
-n = min(len(filtered_files), args.n_samples_max)
+n = len(filtered_files)
 
 print("Number of Samples :", n)
 
@@ -34,7 +34,7 @@ mles = np.array(
             open(
                 os.path.join(
                     args.output_directory,
-                    filename[:n]
+                    filename
                 )
             )
         ).numerical_mle.x for filename in filtered_files
