@@ -35,7 +35,8 @@ mles = np.array(
                 os.path.join(
                     args.output_directory,
                     filename
-                )
+                ),
+                "rb"
             )
         ).numerical_mle.x for filename in filtered_files
     ]
