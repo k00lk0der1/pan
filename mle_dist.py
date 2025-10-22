@@ -42,5 +42,9 @@ mp_pool.close()
 mp_pool.join()
 
 
-print(mles.shape)
+mles = pd.DataFrame(mles)
+
+print(mles.summary())
+
+print(mles.cov())
 
