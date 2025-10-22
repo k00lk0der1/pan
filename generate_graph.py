@@ -7,6 +7,7 @@ from package.graphs import PreferentialAttachmentNetwork
 import pymc as pm
 import arviz
 import multiprocess
+import itertools.repeat
 
 parser = argparse.ArgumentParser("PAN Random Graph Generator")
 
@@ -34,9 +35,9 @@ def pan_objs_generating_function(pan_obj, alpha, beta, n_nodes, seed):
 
 args_iterable = zip(
     pan_objs,
-    repeat(args.alpha),
-    repeat(args.beta),
-    repeat(args.n_nodes),
+    itertools.repeat(args.alpha),
+    itertools.repeat(args.beta),
+    itertools.repeat(args.n_nodes),
     seeds
 )
 
