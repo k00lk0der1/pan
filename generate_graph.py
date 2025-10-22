@@ -23,7 +23,8 @@ args = parser.parse_args()
 
 seeds = np.random.RandomState(args.random_seed).randint(0, pow(2,32), size=args.n_samples)
 
-def pan_objs_generating_function(pan_obj, alpha, beta, n_nodes, seed):
+def pan_objs_generating_function(alpha, beta, n_nodes, seed):
+    pan_obj = PreferentialAttachmentNetwork()
     pan_obj.generate_sample(
         alpha=alpha,
         beta=beta,
@@ -33,7 +34,6 @@ def pan_objs_generating_function(pan_obj, alpha, beta, n_nodes, seed):
     return pan_obj
 
 args_iterable = zip(
-    [PreferentialAttachmentNetwork() for _ in range(args.n_samples)],
     repeat(args.alpha),
     repeat(args.beta),
     repeat(args.n_nodes),
