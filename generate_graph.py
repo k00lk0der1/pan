@@ -47,7 +47,7 @@ mp_pool.join()
 for pan_obj in pan_objs:
     open(
         os.path.join(
-            output_directory,
+            args.output_directory,
             f"alpha={args.alpha}_beta={args.beta}_nodes={args.n_nodes}_seed={pan_obj.random_state_seed}"
         ),
         "wb"
