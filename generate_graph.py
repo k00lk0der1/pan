@@ -44,3 +44,9 @@ args_iterable = zip(
 mp_pool = multiprocess.Pool(processes=args.n_processes)
 
 mp_pool.starmap(pan_objs_generating_function, args_iterable)
+
+mp_pool.close()
+mp_pool.join()
+
+for pan_obj in pan_objs:
+    print(pan_obj.observed)
