@@ -36,12 +36,11 @@ def numerical_mle(pan_obj_filename):
 
 mp_pool = multiprocess.Pool(processes=args.n_processes)
 
-pan_objs = mp_pool.starmap(numerical_mle, filtered_files)
+mles = np.array(mp_pool.map(numerical_mle, filtered_files))
 
 mp_pool.close()
 mp_pool.join()
 
-mles = np.array(mp_pool.map(numerical_mle, filtered_files))
 
 print(mles.shape)
 
