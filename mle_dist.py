@@ -42,9 +42,7 @@ mp_pool.close()
 mp_pool.join()
 
 
-mles = pd.DataFrame(mles)
+mles = pd.DataFrame(mles, columns=["alpha", "beta"])
 
-print(mles.describe())
-
-print(mles.cov())
+mles.to_parquet(f"alpha={args.alpha}_beta={args.beta}_nodes={args.n_nodes}_samples={n}.pq")
 
