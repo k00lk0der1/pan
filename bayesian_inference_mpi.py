@@ -24,6 +24,8 @@ size = comm.Get_size()
 # Read pan dill obj
 pan_obj = dill.load(open(args.graph_filepath, "rb"))
 
+print(f"rank {rank} : read data")
+
 # Run inference
 idata = pan_obj.generate_posterior_samples(
     lambda : pm.Uniform('alpha', lower=-1.0, upper=10.0),
