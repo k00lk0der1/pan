@@ -145,7 +145,8 @@ class PreferentialAttachmentNetwork:
         chains = 4,
         cores = 4,
         nuts_sampler = "numpyro",
-        progressbar=False
+        progressbar=False,
+        random_seed=None
     ):
 
         if(not self.observed):
@@ -175,7 +176,8 @@ class PreferentialAttachmentNetwork:
             cores=cores,
             model=pan_model,
             nuts_sampler=nuts_sampler,
-            progressbar=progressbar
+            progressbar=progressbar,
+            random_seed=random_seed
         )
 
         return idata
