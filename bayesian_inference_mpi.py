@@ -1,5 +1,3 @@
-print("Here")
-
 import mpi4py.MPI as MPI
 import os
 import argparse
@@ -25,9 +23,7 @@ hostname = os.popen('hostname').read()
 # --- MPI SETUP ---
 
 # Read pan dill obj
-print(f"rank {rank} : host {hostname} : read data start")
 pan_obj = dill.load(open(args.graph_filepath, "rb"))
-print(f"rank {rank} : host {hostname} : read data end")
 
 
 # Run inference
