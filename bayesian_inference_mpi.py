@@ -1,3 +1,5 @@
+print("Here")
+
 import mpi4py.MPI as MPI
 import os
 import argparse
