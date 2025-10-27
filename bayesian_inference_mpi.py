@@ -19,7 +19,7 @@ if not os.path.exists(args.graph_filepath):
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()
-hostname = socket.gethostname()
+hostname = os.popen('hostname').read()
 # --- MPI SETUP ---
 
 # Read pan dill obj
