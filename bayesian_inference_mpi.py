@@ -22,6 +22,8 @@ size = comm.Get_size()
 hostname = os.popen('hostname').read()
 # --- MPI SETUP ---
 
+print(f"Rank : {rank}, Hostname : {Hostname}")
+
 # Read pan dill obj
 pan_obj = dill.load(open(args.graph_filepath, "rb"))
 
