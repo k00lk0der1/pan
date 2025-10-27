@@ -3,6 +3,7 @@ import os
 import argparse
 from package.graphs import PreferentialAttachmentNetwork
 import dill
+import pymc as pm
 import arviz
 
 parser = argparse.ArgumentParser("Run bayesian inference on a PAN")
