@@ -19,12 +19,14 @@ if not os.path.exists(args.graph_filepath):
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()
+hostname = socket.gethostname()
 # --- MPI SETUP ---
 
 # Read pan dill obj
+print(f"rank {rank} : host {hostname} : read data start")
 pan_obj = dill.load(open(args.graph_filepath, "rb"))
+print(f"rank {rank} : host {hostname} : read data end")
 
-print(f"rank {rank} : read data")
 
 # Run inference
 idata = pan_obj.generate_posterior_samples(
