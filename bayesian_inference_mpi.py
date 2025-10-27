@@ -40,4 +40,4 @@ all_idata_list = comm.gather(idata, root=0)
 if(rank==0):
     valid_idata = [data for data in all_idata_list if data is not None]
     merged_idata = arviz.concat(valid_idata, dim="chain")
-    print(merged_idata.summary())
+    print(arviz.summary(merged_idata, group="posterior"))
