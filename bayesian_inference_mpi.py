@@ -46,3 +46,4 @@ if(rank==0):
     merged_idata = arviz.concat(valid_idata, dim="chain")
     print(merged_idata.posterior.to_dataframe().shape)
     print(arviz.summary(merged_idata, group="posterior"))
+    print(merged_idata.posterior.to_dataframe()[["alpha", "beta"]].cov())
