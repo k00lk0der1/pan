@@ -78,7 +78,7 @@ class PreferentialAttachmentNetwork:
             )
         
         self.N = np.zeros(shape=(self.n_nodes-2, max_unique_degree))
-        self.N_deg = np.zeros(shape=(self.n_nodes-2, max_unique_degree))
+        self.N_deg = np.ones(shape=(self.n_nodes-2, max_unique_degree))+1e-5
 
         for t in tqdm.tqdm(range(2, self.n_nodes), disable=disable_progress_bar):
             for degree_counter, d in enumerate(N_dict[t].keys()):
