@@ -1,1 +1,2 @@
 from .preferential_attachment_network import PreferentialAttachmentNetwork
+from .affine_preferential_attachment_network import AffinePreferentialAttachmentNetwork
