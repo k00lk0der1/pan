@@ -1,0 +1,172 @@
+import copy
+import numpy as np
+import tqdm
+import pytensor.tensor as pt
+import pytensor
+import scipy.stats, scipy.optimize 
+import pymc as pm
+import numpyro
+
+
+class AffinePreferentialAttachmentNetwork:
+    def __init__(self):
+        self.observed = False
+    
+    def generate_sample(self, alpha, n_nodes, random_state_seed=None, disable_progress_bar=True):
+        #Setting n_nodes
+        self.n_nodes = n_nodes
+
+        #Setting the seed and generating a RandomState object.
+        self.random_state_seed = random_state_seed
+        random_state = np.random.RandomState(self.random_state_seed)
+        
+        #Generating samples from the uniform distribution to use for inverse CDF tranform
+        uniform_samples = random_state.uniform(size=(self.n_nodes-2))
+
+        #Initializing Graph State
+        self.degrees = np.zeros(shape=(self.n_nodes)).astype(np.int64)
+        self.degrees[:2] = 1
+
+        self.d_t = np.zeros(shape=(self.n_nodes)).astype(np.int64)
+        self.N_t_d_t = np.zeros(shape=(self.n_nodes)).astype(np.int64)
+
+        f = lambda x : x + alpha
+        
+        for t in tqdm.tqdm(range(2, self.n_nodes), disable=disable_progress_bar):
+            parent_node_probability_propto = f(self.degrees[:t])
+            
+            parent_node_probability_cdf = (
+                parent_node_probability_propto.cumsum() / 
+                parent_node_probability_propto.sum()
+            )
+
+            chosen_node_index = (parent_node_probability_cdf>uniform_samples[t-2]).argmax()
+            
+
+            self.d_t[t] = self.degrees[chosen_node_index]
+            self.degrees[t] = 1
+            self.degrees[chosen_node_index] = self.degrees[chosen_node_index] + 1
+
+        
+        N_dict = {
+            2:{np.int64(1):2}
+        }
+        
+        self.N_t_d_t[2] = np.int64(2)
+
+        max_unique_degree = 2
+
+        for t in tqdm.tqdm(range(3, self.n_nodes), disable=disable_progress_bar):
+
+            N_dict[t] = copy.deepcopy(N_dict[t-1])
+            N_dict[t][np.int64(1)] = N_dict[t][np.int64(1)] + 1
+            N_dict[t][self.d_t[t-1]] = N_dict[t][self.d_t[t-1]] - 1
+
+            if self.d_t[t-1]+1 in N_dict[t].keys():
+                N_dict[t][self.d_t[t-1]+1] = N_dict[t][self.d_t[t-1]+1] + 1
+            else:
+                N_dict[t][self.d_t[t-1]+1] = 1
+            
+            if(N_dict[t][self.d_t[t-1]]==0):
+                N_dict[t].pop(self.d_t[t-1])
+            
+            self.N_t_d_t[t] = N_dict[t][self.d_t[t]]
+            
+            max_unique_degree = max(
+                max_unique_degree,
+                len(N_dict[t].keys())
+            )
+        
+        self.d_t =  self.d_t[2:]
+        self.N_t_d_t =  self.N_t_d_t[2:]
+        self.t = np.arange(2, self.n_nodes)
+        
+        self.observed = True
+
+    def negative_log_likelihood(self, alpha, n_nodes):
+        
+        log_lik = (
+            pt.log(self.d_t[:n_nodes-2]+alpha) + 
+            pt.log(self.N_t_d_t[:n_nodes-2]) -
+            pt.log(
+                self.t*(alpha+2) - 2
+            )
+        ).sum()
+    
+        return (-log_lik)
+    
+    def numerical_mle(self, alpha_bounds=(-1,10), n_nodes=None):
+        if(not self.observed):
+            raise RuntimeError("Graph has not been observed yet")
+
+        if(type(n_nodes)==type(None)):
+            n_nodes = self.n_nodes
+          
+        alpha_sym = pt.scalar('alpha')
+            
+        nll = self.negative_log_likelihood(alpha_sym, n_nodes)
+            
+        # Compile the symbolic expression into a callable function
+        f_nll = pytensor.function(
+            inputs=[alpha_sym],
+            outputs=nll
+        )
+
+        def objective(params):
+            alpha_val, = params
+            return f_nll(alpha_val, )
+        
+        soln = scipy.optimize.dual_annealing(
+            objective,
+            bounds = [
+                alpha_bounds,
+            ]
+        )
+        
+        return soln
+
+    
+    def generate_posterior_samples(
+        self,
+        alpha_prior_factory,
+        n_nodes=None,
+        samples = 10000,
+        warmup = 5000,
+        chains = 4,
+        cores = 4,
+        nuts_sampler = "numpyro",
+        progressbar=False,
+        random_seed=None
+    ):
+
+        if(not self.observed):
+            raise RuntimeError("Graph has not been observed yet")
+
+        if(type(n_nodes)==type(None)):
+            n_nodes = self.n_nodes
+        
+        pan_model = pm.Model()
+        
+        with pan_model as model:
+            alpha = alpha_prior_factory()
+            likelihood = pm.Potential(
+                'likelihood',
+                -self.negative_log_likelihood(
+                    alpha,
+                    n_nodes
+                )
+            )
+
+        idata = pm.sample(
+            draws=samples,
+            tune=warmup,
+            chains=chains,
+            cores=cores,
+            model=pan_model,
+            nuts_sampler=nuts_sampler,
+            progressbar=progressbar,
+            random_seed=random_seed
+        )
+
+        return idata
+        
