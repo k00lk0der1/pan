@@ -1,4 +1,4 @@
-from utils import *    
+from .utils import *    
 
 def V_0(alpha, beta, tolerance, L_max_start):
     lambda_val, L_max = find_malthusian_parameter(tolerance, alpha, beta, L_max_start)

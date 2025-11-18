@@ -1,4 +1,4 @@
-from utils import * 
+from .utils import * 
 
 def affine_V_0(alpha, tolerance, L_max_start):
     #For affine case (known value of beta=1)
