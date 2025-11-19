@@ -11,8 +11,105 @@ import numpyro
 class PreferentialAttachmentNetwork:
     def __init__(self):
         self.observed = False
+
+    def generate_sample(self, alpha, beta, n_nodes, random_state_seed=None, disable_progress_bar=True, sparse=False):
+        if(sparse):
+            self._generate_sample_sparse(alpha, beta, n_nodes, random_state_seed, disable_progress_bar)
+            self._negative_log_likelihood = self._negative_log_likelihood_sparse
+        else:
+            self._generate_sample_nonsparse(alpha, beta, n_nodes, random_state_seed, disable_progress_bar)
+            self._negative_log_likelihood = self._negative_log_likelihood_nonsparse
     
-    def generate_sample(self, alpha, beta, n_nodes, random_state_seed=None, disable_progress_bar=True):
+    def _generate_sample_nonsparse(self, alpha, beta, n_nodes, random_state_seed=None, disable_progress_bar=True):
+        #Setting n_nodes
+        self.n_nodes = n_nodes
+
+        #Setting the seed and generating a RandomState object.
+        self.random_state_seed = random_state_seed
+        random_state = np.random.RandomState(self.random_state_seed)
+        
+        #Generating samples from the uniform distribution to use for inverse CDF tranform
+        uniform_samples = random_state.uniform(size=(self.n_nodes-2))
+
+        #Initializing Graph State
+        self.degrees = np.zeros(shape=(self.n_nodes)).astype(np.int64)
+        self.degrees[:2] = 1
+
+        self.d_t = np.zeros(shape=(self.n_nodes)).astype(np.int64)
+        self.N_t_d_t = np.zeros(shape=(self.n_nodes)).astype(np.int64)
+
+        f = lambda x : np.power(x + alpha, beta)
+        
+        for t in tqdm.tqdm(range(2, self.n_nodes), disable=disable_progress_bar):
+            parent_node_probability_propto = f(self.degrees[:t])
+            
+            parent_node_probability_cdf = (
+                parent_node_probability_propto.cumsum() / 
+                parent_node_probability_propto.sum()
+            )
+
+            chosen_node_index = (parent_node_probability_cdf>uniform_samples[t-2]).argmax()
+            
+
+            self.d_t[t] = self.degrees[chosen_node_index]
+            self.degrees[t] = 1
+            self.degrees[chosen_node_index] = self.degrees[chosen_node_index] + 1
+
+        
+        N_dict = {
+            2:{np.int64(1):2}
+        }
+        
+        self.N_t_d_t[2] = np.int64(2)
+
+        max_unique_degree = 2
+
+        for t in tqdm.tqdm(range(3, self.n_nodes), disable=disable_progress_bar):
+
+            N_dict[t] = copy.deepcopy(N_dict[t-1])
+            N_dict[t][np.int64(1)] = N_dict[t][np.int64(1)] + 1
+            N_dict[t][self.d_t[t-1]] = N_dict[t][self.d_t[t-1]] - 1
+
+            if self.d_t[t-1]+1 in N_dict[t].keys():
+                N_dict[t][self.d_t[t-1]+1] = N_dict[t][self.d_t[t-1]+1] + 1
+            else:
+                N_dict[t][self.d_t[t-1]+1] = 1
+            
+            if(N_dict[t][self.d_t[t-1]]==0):
+                N_dict[t].pop(self.d_t[t-1])
+            
+            self.N_t_d_t[t] = N_dict[t][self.d_t[t]]
+            
+            max_unique_degree = max(
+                max_unique_degree,
+                len(N_dict[t].keys())
+            )
+
+        self.degrees = np.arange(1, max(N_dict[self.n_nodes-1].keys())+1)
+        self.N = np.zeros(shape=(self.n_nodes-2, self.degrees.shape[0]))
+
+        for t in tqdm.tqdm(range(2, self.n_nodes), disable=disable_progress_bar):
+            for degree_counter, d in enumerate(N_dict[t].keys()):
+                self.N[t-2][d-1] = N_dict[t][d]
+            
+        self.d_t =  self.d_t[2:]
+        self.N_t_d_t =  self.N_t_d_t[2:]
+        
+        self.observed = True
+
+    def _negative_log_likelihood_nonsparse(self, alpha, beta, n_nodes):
+        
+        log_lik = (
+            (beta*pt.log(self.d_t[:n_nodes-2]+alpha)) + 
+            pt.log(self.N_t_d_t[:n_nodes-2]) -
+            pt.log(
+                (pt.power(self.degrees+alpha, beta) * self.N[:n_nodes-2]).sum(axis=1)
+            )
+        ).sum()
+    
+        return (-log_lik)
+
+    def _generate_sample_sparse(self, alpha, beta, n_nodes, random_state_seed=None, disable_progress_bar=True):
         #Setting n_nodes
         self.n_nodes = n_nodes
 
@@ -90,7 +187,7 @@ class PreferentialAttachmentNetwork:
         
         self.observed = True
 
-    def negative_log_likelihood(self, alpha, beta, n_nodes):
+    def _negative_log_likelihood_sparse(self, alpha, beta, n_nodes):
         
         log_lik = (
             (beta*pt.log(self.d_t[:n_nodes-2]+alpha)) + 
@@ -101,6 +198,7 @@ class PreferentialAttachmentNetwork:
         ).sum()
     
         return (-log_lik)
+
     
     def numerical_mle(self, alpha_bounds=(-1,10), beta_bounds=(0,1), n_nodes=None):
         if(not self.observed):
@@ -112,7 +210,7 @@ class PreferentialAttachmentNetwork:
         alpha_sym = pt.scalar('alpha')
         beta_sym = pt.scalar('beta')
             
-        nll = self.negative_log_likelihood(alpha_sym, beta_sym, n_nodes)
+        nll = self._negative_log_likelihood(alpha_sym, beta_sym, n_nodes)
             
         # Compile the symbolic expression into a callable function
         f_nll = pytensor.function(
@@ -123,6 +221,7 @@ class PreferentialAttachmentNetwork:
         def objective(params):
             alpha_val, beta_val = params
             return f_nll(alpha_val, beta_val)
+
         
         soln = scipy.optimize.dual_annealing(
             objective,
@@ -162,7 +261,7 @@ class PreferentialAttachmentNetwork:
             beta = beta_prior_factory()
             likelihood = pm.Potential(
                 'likelihood',
-                -self.negative_log_likelihood(
+                -self._negative_log_likelihood(
                     alpha,
                     beta,
                     n_nodes
