@@ -33,7 +33,6 @@ idata = pan_obj.generate_posterior_samples(
     lambda : pm.Uniform('alpha', lower=-1.0, upper=10.0),
     lambda : pm.Uniform('beta', lower=0, upper=1.0),
     chains = 2,
-    cores = 2,
     random_seed=42+rank
 )
 
