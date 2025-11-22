@@ -41,10 +41,11 @@ inf_time = inf_end_time - inf_start_time
 
 # Combining runs from all nodes
 all_idata_list = comm.gather(idata, root=0)
-all_inf_time = dict(comm.gather((rank, inf_time), root=0))
+all_inf_time = comm.gather((rank, inf_time), root=0)
 
 # If rank is 0, 
 if(rank==0):
+    all_inf_time = dict(all_inf_time)
     valid_idata = [data for data in all_idata_list if data is not None]
     merged_idata = arviz.concat(valid_idata, dim="chain")
     merged_idata.to_netcdf(args.graph_filepath+"_posterior")
