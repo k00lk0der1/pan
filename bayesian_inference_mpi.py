@@ -58,7 +58,6 @@ idata = pan_obj.generate_posterior_samples(
 )
 
 if(args.profile):
-    jax.block_until_ready()
     jax.profiler.stop_trace()
     
 
